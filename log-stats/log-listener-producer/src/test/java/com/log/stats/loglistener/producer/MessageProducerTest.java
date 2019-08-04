@@ -91,7 +91,7 @@ public class MessageProducerTest {
     @Test
     public void should_row_string_to_json_object(){
 
-        String row ="2019-08-03 19:46:26.060 DEBUG  Tokyo Hello From Tokyo";
+        String row ="2019-08-03 19:46:26.060 DEBUG Tokyo Hello From Tokyo";
         String row2="2019-08-03 23:34:04.640 WARN  Istanbul Hello From Istanbul";
         String expected="{\n" +
                 "  \"log_raw\" : {\n" +

@@ -37,9 +37,9 @@ public class LogRowValidatorBolt extends BaseRichBolt {
             LogRow logRow = this.objectMapper.readValue(jsonRawLogRow.get("log_raw").toString(), LogRow.class);
 
             if (RawLogRowValidator.run(logRow)) {
-                this.outputCollector.emit("valid-log", new Values(logRow.toString()));
+                this.outputCollector.emit("valid-log-stream", new Values(jsonRawLogRow.get("log_raw").toString()));
             } else {
-                this.outputCollector.emit("invalid-log", new Values(jsonRawLogRow.get("log_raw").toString()));
+                this.outputCollector.emit("invalid-log-stream", new Values(jsonRawLogRow.get("log_raw").toString()));
             }
         } catch (Exception exception) {
             LOGGER.error("Exception: " + exception);

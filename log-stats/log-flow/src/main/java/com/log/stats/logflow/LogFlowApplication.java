@@ -47,8 +47,8 @@ public class LogFlowApplication {
         builder.setSpout("kafkaSpout", logFlowKafkaSpout, 1);
         builder.setBolt("validatorBolt", validatorBolt, 1).allGrouping("kafkaSpout");
         builder.setBolt("kafkaValidBolt", kafkaValidBolt, 1).allGrouping("validatorBolt", "valid-log-stream");
-        builder.setBolt("inValidLogStreamBolt", inValidLogStreamBolt, 1).allGrouping("validatorBolt", "invalid-log-stream");
-        builder.setBolt("kafkaInvalidBolt", kafkaInvalidBolt, 1).allGrouping("inValidLogStreamBolt");
+       // builder.setBolt("inValidLogStreamBolt", inValidLogStreamBolt, 1).allGrouping("validatorBolt", "invalid-log-stream");
+        builder.setBolt("kafkaInvalidBolt", kafkaInvalidBolt, 1).allGrouping("validatorBolt","invalid-log-stream");
 
         Config config = new Config();
         config.setDebug(true);

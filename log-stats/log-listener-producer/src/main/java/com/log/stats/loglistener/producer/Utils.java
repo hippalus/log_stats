@@ -11,11 +11,12 @@ import java.util.regex.Pattern;
 public class Utils {
 
     public static String stringToJsonString(String row) {
-        // 2019-08-03 21:57:39.037 DEBUG  Istanbul Hello From Istanbul
-        String regex = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}) ([^ ]*) {2}([^ ]*) (.*)$";
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(row);
 
+        //  Test for invalid Log Flow  String regex= "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}) ([^ ]*) ([^ ]*) (.*)$";
+        // 2019-08-03 21:57:39.037 DEBUG  Istanbul Hello From Istanbul
+        final String regex = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}) ([^ ]*) {1,2}([^ ]*) (.*)$";
+        final Pattern p = Pattern.compile(regex);
+        final Matcher m = p.matcher(row);
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();

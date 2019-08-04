@@ -11,7 +11,7 @@ public class LogGeneratorApplication {
             City city = Utils.getRandomCity();
             Logger logger = Utils.getLoggerByCity(city);
             checkRandomLogLevelAndRandomLoggerName(city, logger);
-            Thread.sleep((long) (Math.random()*1000));
+            Thread.sleep((long) (Math.random() * 1000));
         }
 
     }
@@ -34,21 +34,15 @@ public class LogGeneratorApplication {
         logger.error(city.getMessage());
     }
 
-    private static void loggerIsWarn(City city, Logger logger) {
-        logger.warn(String.format(" %s", city.getMessage()));
-    }
+    private static void loggerIsWarn(City city, Logger logger) { logger.warn(city.getMessage()); }
 
-    private static void loggerIsInfo(City city, Logger logger) {
-        logger.info(String.format(" %s", city.getMessage()));
-    }
+    private static void loggerIsInfo(City city, Logger logger) { logger.info(city.getMessage()); }
 
     private static void loggerIsDebug(City city, Logger logger) {
         logger.debug(city.getMessage());
     }
 
-    private static void loggerIsFatal(City city, Logger logger) {
-        logger.fatal(city.getMessage());
-    }
+    private static void loggerIsFatal(City city, Logger logger) { logger.fatal(city.getMessage()); }
 
     private static boolean isLogLevelFatal() {
         return LogLevel.FATAL.equals(LogLevel.randomLogLevel());

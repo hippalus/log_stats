@@ -9,6 +9,7 @@ public class LogFlowKafkaSpout extends KafkaSpout {
     public LogFlowKafkaSpout(String bootstrapServers, String topic, String groupId, int offsetCommitPeriods,
                              int maxUncommittedOffsets) {
         super(KafkaSpoutConfig.builder(bootstrapServers, topic)
+                .setProp("enable.auto.commit", "true")
                 .setRecordTranslator(new KafkaRecordTranslator<>())
                 .setGroupId(groupId)
                 .setOffsetCommitPeriodMs(offsetCommitPeriods)
