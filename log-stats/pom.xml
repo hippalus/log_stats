@@ -18,6 +18,7 @@
         <module>log-generator</module>
         <module>log-flow</module>
         <module>log-listener-producer</module>
+        <module>log-stats-interface</module>
     </modules>
 
     <dependencies>
