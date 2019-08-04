@@ -1,0 +1,128 @@
+name: "log-flow-topology"
+
+config:
+
+  topology.workers: 1
+  topology.tick.tuple.freq.secs: 1000
+
+components:
+
+  - id: "kafkaBoltProps"
+    className: "java.util.Properties"
+    configMethods:
+      - name: "put"
+        args:
+          - "bootstrap.servers"
+          - "127.0.0.1:9092"
+      - name: "put"
+        args:
+          - "key.serializer"
+          - "org.apache.kafka.common.serialization.StringSerializer"
+      - name: "put"
+        args:
+          - "value.serializer"
+          - "org.apache.kafka.common.serialization.StringSerializer"
+      - name: "put"
+        args:
+          - "batch.size"
+          - "0"
+      - name: "put"
+        args:
+          - "acks"
+          - "all"
+
+  - id: "kafkaInvalidTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "cityLog-invalid"
+
+  - id: "kafkaValidTopicSelector"
+    className: "org.apache.storm.kafka.bolt.selector.DefaultTopicSelector"
+    constructorArgs:
+      - "cityLog-valid"
+
+  - id: "validLogRowMapper"
+    className: "org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper"
+    constructorArgs:
+      - "key"
+      - "valid-log"
+
+  - id: "errorMapper"
+    className: "org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper"
+    constructorArgs:
+      - "key"
+      - "invalid-log"
+
+spouts:
+
+  - id: "logFlowKafkaSpout"
+    className: "com.log.stats.logflow.topology.spout.LogFlowKafkaSpout"
+    constructorArgs:
+      - "127.0.0.1:9092"
+      - "cityLog-raw"
+      - "raw-log-consumer-group"
+      - 3000
+      - 1000000
+
+bolts:
+
+  - id: "validatorBolt"
+    className: "com.log.stats.logflow.topology.bolt.LogRowValidatorBolt"
+
+  - id: "inValidLogStreamBolt"
+    className: "com.log.stats.logflow.topology.bolt.InValidLogStreamBolt"
+
+  - id: "kafkaValidBolt"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaBoltProps"]
+      - name: "withTopicSelector"
+        args: [ref: "kafkaValidTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "validLogRowMapper"]
+
+  - id: "kafkaInvalidBolt"
+    className: "org.apache.storm.kafka.bolt.KafkaBolt"
+    configMethods:
+      - name: "withProducerProperties"
+        args: [ref: "kafkaBoltProps"]
+      - name: "withTopicSelector"
+        args: [ref: "kafkaInvalidTopicSelector"]
+      - name: "withTupleToKafkaMapper"
+        args: [ref: "errorMapper"]
+
+streams:
+
+  - name: "logFlowKafkaSpout -> validatorBolt"
+    from: "logFlowKafkaSpout"
+    to: "validatorBolt"
+    grouping:
+      type: ALL
+
+  - name: "validatorBolt -> inValidLogStreamBolt"
+    from: "preprocessBolt"
+    to: "inValidLogStreamBolt"
+    grouping:
+      streamId: invalid-log-stream
+      type: ALL
+
+  - name: "inValidLogStreamBolt -> kafkaInvalidBolt"
+    from: "inValidLogStreamBolt"
+    to: "kafkaInvalidBolt"
+    grouping:
+      type: ALL
+
+  - name: "preprocessBolt -> enrichmentBolt"
+    from: "preprocessBolt"
+    to: "enrichmentBolt"
+    grouping:
+      streamId: vcall-valid
+      type: ALL
+
+  - name: "validatorBolt -> kafkaValidBolt"
+    from: "validatorBolt"
+    to: "kafkaValidBolt"
+    grouping:
+      streamId: valid-log-stream
+      type: ALL
