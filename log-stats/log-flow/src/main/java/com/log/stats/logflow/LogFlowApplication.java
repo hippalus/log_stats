@@ -1,5 +1,6 @@
 package com.log.stats.logflow;
 
+import com.log.stats.logflow.topology.bolt.ElasticSearchBolt;
 import com.log.stats.logflow.topology.bolt.LogRowValidatorBolt;
 import com.log.stats.logflow.topology.spout.LogFlowKafkaSpout;
 import org.apache.storm.Config;
@@ -21,6 +22,15 @@ public class LogFlowApplication {
         kafkaBoltProps.put("batch.size", "0");
         kafkaBoltProps.put("acks", "all");
 
+
+        Properties elasticProperties = new Properties();
+        elasticProperties.put("es.storm.bolt.flush.entries.size", 1000);
+        elasticProperties.put("es.storm.bolt.tick.tuple.flush", "true");
+        elasticProperties.put("es.storm.bolt.write.ack", "true");
+        elasticProperties.put("es.input.json", "true");
+        elasticProperties.put("es.nodes", "127.0.0.1");
+        elasticProperties.put("es.port", 9200);
+
         LogFlowKafkaSpout logFlowKafkaSpout = new LogFlowKafkaSpout("127.0.0.1:9092", "cityLog-raw", "raw-log-consumer-group", 3000, 1000000);
         LogRowValidatorBolt validatorBolt = new LogRowValidatorBolt();
 
@@ -39,13 +49,14 @@ public class LogFlowApplication {
                 .withTupleToKafkaMapper(errorMapper);
 
 
-
+        ElasticSearchBolt elasticSearchBolt=new ElasticSearchBolt("city-logs" ,"valid","127.0.0.1",9300);
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("kafkaSpout", logFlowKafkaSpout, 1);
         builder.setBolt("validatorBolt", validatorBolt, 1).allGrouping("kafkaSpout");
         builder.setBolt("kafkaValidBolt", kafkaValidBolt, 1).allGrouping("validatorBolt", "valid-log-stream");
         builder.setBolt("kafkaInvalidBolt", kafkaInvalidBolt, 1).allGrouping("validatorBolt","invalid-log-stream");
+        builder.setBolt("elasticSearchBolt",elasticSearchBolt,1).shuffleGrouping("validatorBolt","valid-log-stream");
 
         Config config = new Config();
         config.setDebug(true);
