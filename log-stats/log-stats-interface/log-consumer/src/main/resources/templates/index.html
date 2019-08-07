@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="ISO-8859-1">
-    <title>Home</title>
+    <title>City Logs</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
@@ -13,6 +13,12 @@
             src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <script type="text/javascript">
         var stompClient;
+        //Istanbul", "Tokyo", "Moscow", "Beijing", "London"
+        var istanbul=0;
+        var tokyo=0;
+        var moscow=0;
+        var beijing=0;
+        var london=0;
 
         /* Chart Configuration */
         var config = {
@@ -20,18 +26,44 @@
             data : {
                 labels : [],
                 datasets : [ {
-                    label : 'Temperature',
-                    backgroudColor : 'rgb(255, 99, 132)',
+                    label : 'Istanbul',
+                    backgroundColor : 'rgb(255, 99, 132)',
                     borderColor : 'rgb(255, 99, 132)',
                     data : [],
+                    id:"istanbul",
                     fill : false
-                } ]
+                } ,
+                    {label : 'Moscow',
+                        backgroundColor : 'rgb(255,226,79)',
+                        borderColor : 'rgb(255,226,79)',
+                        data : [],
+                        id:"moscow",
+                        fill : false},
+
+                    {label : 'Tokyo',
+                        backgroundColor : 'rgb(255,39,40)',
+                        borderColor : 'rgb(255,39,40)',
+                        data : [],
+                        id:"tokyo",
+                        fill : false},
+                    {label : 'Beijing',
+                        backgroundColor : 'rgb(23,230,255)',
+                        borderColor : 'rgb(23,230,255)',
+                        data : [],
+                        id:"beijing",
+                        fill : false},
+                    {label : 'London',
+                        backgroundColor : 'rgb(11,255,44)',
+                        borderColor : 'rgb(11,255,44)',
+                        data : [],
+                        id:"london",
+                        fill : false}]
             },
             options : {
                 responsive : true,
                 title : {
                     display : true,
-                    text : 'Temperature'
+                    text : 'Log'
                 },
                 tooltips : {
                     mode : 'index',
@@ -57,11 +89,13 @@
                     } ],
                     yAxes : [ {
                         display : true,
-                        scaleLabel : {
-                            display : true,
-                            labelString : 'Value'
-                        }
-                    } ]
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1000,
+                            min: 0,
+                            max: 1000
+                        }}
+                    ]
                 }
             }
         };
@@ -77,28 +111,56 @@
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 stompClient.subscribe('/topic/realtime-log-flow', function(logRow) {
-                    $('#temperature').text(logRow.body);
+                    console.log("logRow-->"+logRow.body);
+                    var obj =JSON.parse(logRow.body);
+                    console.log("obj.City"+obj.City);
+                    console.log("date "+obj.Date);
+                    //Istanbul", "Tokyo", "Moscow", "Beijing", "London"
+                    if(obj.City=='Istanbul')
+                        istanbul +=1;
+                    if(obj.City == 'Tokyo')
+                        tokyo +=1;
+                    if(obj.City == 'Moscow')
+                        moscow +=1;
+                    if(obj.City == 'Beijing')
+                        beijing +=1;
+                    if(obj.City == 'London')
+                        london +=1;
+                    $('#cityLogs').text(logRow.body);
                     /* Push new data On X-Axis of Chart */
                     config.data.labels.push(new Date());
                     /* Push new data on Y-Axis of chart */
                     config.data.datasets.forEach(function(dataset) {
-                        dataset.data.push(logRow.body);
+                        //dataset.data.push(obj.City);
+                        if(dataset.id =='istanbul')
+                            dataset.data.push(istanbul);
+                        if(dataset.id =='moscow')
+                            dataset.data.push(moscow);
+                        if(dataset.id =='tokyo')
+                            dataset.data.push(tokyo);
+                        if(dataset.id =='beijing')
+                            dataset.data.push(beijing);
+                        if(dataset.id =='london')
+                            dataset.data.push(london);
+
                     });
+
                     window.myLine.update();
                 });
             });
         });
+
     </script>
 </head>
 <body>
 <div class="alert alert-danger" role="alert" style="width:300px;margin-left:40%;margin-top:10px;">
-    <p class="text-center">Current Temperature : <b id="temperature">0</b></p>
+    <p class="text-center">Current Log : <b id="cityLogs">0</b></p>
 </div>
 <div class="model">
     <div class="modal-dialog" style="width:80%;height:auto">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Temperature</h5>
+                <h5 class="modal-title">City Log Level Chart</h5>
             </div>
             <div class="model-body">
                 <div class="container" style="width:80%">
