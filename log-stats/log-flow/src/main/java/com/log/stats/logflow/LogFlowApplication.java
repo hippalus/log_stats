@@ -23,16 +23,9 @@ public class LogFlowApplication {
         kafkaBoltProps.put("acks", "all");
 
 
-        Properties elasticProperties = new Properties();
-        elasticProperties.put("es.storm.bolt.flush.entries.size", 1000);
-        elasticProperties.put("es.storm.bolt.tick.tuple.flush", "true");
-        elasticProperties.put("es.storm.bolt.write.ack", "true");
-        elasticProperties.put("es.input.json", "true");
-        elasticProperties.put("es.nodes", "127.0.0.1");
-        elasticProperties.put("es.port", 9200);
-
         LogFlowKafkaSpout logFlowKafkaSpout = new LogFlowKafkaSpout("127.0.0.1:9092", "cityLog-raw", "raw-log-consumer-group", 3000, 1000000);
         LogRowValidatorBolt validatorBolt = new LogRowValidatorBolt();
+        ElasticSearchBolt elasticSearchBolt=new ElasticSearchBolt("city-logs" ,"valid","127.0.0.1",9300);
 
         FieldNameBasedTupleToKafkaMapper<String, String> validLogRowMapper = new FieldNameBasedTupleToKafkaMapper<>("key", "valid-log");
 
@@ -49,7 +42,6 @@ public class LogFlowApplication {
                 .withTupleToKafkaMapper(errorMapper);
 
 
-        ElasticSearchBolt elasticSearchBolt=new ElasticSearchBolt("city-logs" ,"valid","127.0.0.1",9300);
 
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("kafkaSpout", logFlowKafkaSpout, 1);
