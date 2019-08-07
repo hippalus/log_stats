@@ -69,8 +69,13 @@ bolts:
   - id: "validatorBolt"
     className: "com.log.stats.logflow.topology.bolt.LogRowValidatorBolt"
 
-  - id: "inValidLogStreamBolt"
-    className: "com.log.stats.logflow.topology.bolt.InValidLogStreamBolt"
+  - id: "elasticSearchBolt"
+    className: "com.log.stats.logflow.topology.bolt.ElasticSearchBolt"
+    constructorArgs:
+      - "city-logs"
+      - "valid"
+      - "127.0.0.1"
+      - 9300
 
   - id: "kafkaValidBolt"
     className: "org.apache.storm.kafka.bolt.KafkaBolt"
@@ -126,3 +131,10 @@ streams:
     grouping:
       streamId: valid-log-stream
       type: ALL
+
+  - name: "validatorBolt -> elasticSearchBolt"
+    from: "validatorBolt"
+    to: "elasticSearchBolt"
+    grouping:
+      streamId: valid-log-stream
+      type: SHUFFLE
