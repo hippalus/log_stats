@@ -94,3 +94,23 @@ services:
     tty : true
     networks:
       - esnet1
+
+  loglistenercombine:
+    image: combined-services
+    depends_on:
+      - zookeeper
+      - kafka
+      - nimbus
+      - supervisor
+    networks:
+      - esnet1
+
+  logstats:
+    image: log-stats
+    depends_on:
+      - loglistenercombine
+    networks:
+      - esnet1
+    environment:
+      KAFKA.BOOTSTRAPSERVER: kafka:9092
+
