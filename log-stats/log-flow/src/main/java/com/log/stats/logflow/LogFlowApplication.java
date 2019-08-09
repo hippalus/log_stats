@@ -5,6 +5,7 @@ import com.log.stats.logflow.topology.bolt.LogRowValidatorBolt;
 import com.log.stats.logflow.topology.spout.LogFlowKafkaSpout;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
+import org.apache.storm.StormSubmitter;
 import org.apache.storm.kafka.bolt.KafkaBolt;
 import org.apache.storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper;
 import org.apache.storm.kafka.bolt.selector.DefaultTopicSelector;
@@ -52,9 +53,11 @@ public class LogFlowApplication {
 
         Config config = new Config();
         config.setDebug(true);
+        config.setNumWorkers(1);
+        config.setMaxSpoutPending(5000);
 
-        LocalCluster local = new LocalCluster();
-        local.submitTopology("log_flow_topology", config, builder.createTopology());
+       // LocalCluster local = new LocalCluster();
+        StormSubmitter.submitTopology("log_flow_topology", config, builder.createTopology());
 
     }
 }

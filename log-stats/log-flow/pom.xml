@@ -17,8 +17,8 @@
     <dependency>
         <groupId>org.apache.storm</groupId>
         <artifactId>storm-core</artifactId>
-        <version>1.2.3</version>
-        <scope>compile</scope>
+        <version>1.2.2</version>
+        <scope>provided</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
@@ -37,19 +37,19 @@
     <dependency>
         <groupId>org.apache.storm</groupId>
         <artifactId>flux-core</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.2</version>
     </dependency>
 
     <dependency>
         <groupId>org.apache.storm</groupId>
         <artifactId>flux-wrappers</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.2</version>
     </dependency>
 
     <dependency>
         <groupId>org.apache.storm</groupId>
         <artifactId>storm-kafka-client</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.2</version>
     </dependency>
 
     <dependency>
@@ -75,13 +75,13 @@
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>2.2.0</version>
+        <version>2.3.0</version>
     </dependency>
 
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.8.7</version>
+        <version>2.9.9.3</version>
     </dependency>
     <dependency>
         <groupId>com.googlecode.json-simple</groupId>
@@ -106,12 +106,26 @@
 </dependencies>
     <build>
         <plugins>
+
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.log.stats.logflow.LogFlowApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+         <!--   <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
                 </configuration>
                 <executions>
                     <execution>
@@ -130,7 +144,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -140,7 +154,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <plugin>
+          <!--  <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
@@ -165,13 +179,13 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
-            <plugin>
+     <!--       <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
@@ -192,7 +206,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>
