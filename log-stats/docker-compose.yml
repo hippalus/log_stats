@@ -114,3 +114,10 @@ services:
     environment:
       KAFKA.BOOTSTRAPSERVER: kafka:9092
 
+  logflow:
+    image: log-flow
+    depends_on:
+      - loglistenercombine
+    networks:
+      - esnet1
+
