@@ -2,7 +2,7 @@ name: "log-flow-topology"
 
 config:
 
-  topology.workers: 1
+  topology.workers: 2
   topology.tick.tuple.freq.secs: 1000
 
 components:
@@ -13,7 +13,7 @@ components:
       - name: "put"
         args:
           - "bootstrap.servers"
-          - "127.0.0.1:9092"
+          - "kafka:9092"
       - name: "put"
         args:
           - "key.serializer"
@@ -58,7 +58,7 @@ spouts:
   - id: "logFlowKafkaSpout"
     className: "com.log.stats.logflow.topology.spout.LogFlowKafkaSpout"
     constructorArgs:
-      - "127.0.0.1:9092"
+      - "kafka:9092"
       - "cityLog-raw"
       - "raw-log-consumer-group"
       - 3000
@@ -74,7 +74,7 @@ bolts:
     constructorArgs:
       - "city-logs"
       - "valid"
-      - "127.0.0.1"
+      - "elasticsearch"
       - 9300
 
   - id: "kafkaValidBolt"

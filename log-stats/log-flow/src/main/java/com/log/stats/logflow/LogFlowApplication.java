@@ -61,10 +61,10 @@ public class LogFlowApplication {
 
             Config config = new Config();
             config.setDebug(true);
-            config.setNumWorkers(1);
+            config.setNumWorkers(2);
             config.setMaxSpoutPending(5000);
 
-            // LocalCluster local = new LocalCluster();
+            LocalCluster local = new LocalCluster();
             StormSubmitter.submitTopology("log_flow_topology", config, builder.createTopology());
 
     }

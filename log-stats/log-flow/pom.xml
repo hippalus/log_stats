@@ -51,7 +51,21 @@
         <artifactId>storm-kafka-client</artifactId>
         <version>1.2.2</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.apache.storm</groupId>
+        <artifactId>storm-kafka</artifactId>
+        <version>1.2.2</version>
+    </dependency>
+     <dependency>
+    <groupId>commons-lang</groupId>
+    <artifactId>commons-lang</artifactId>
+    <version>2.6</version>
+</dependency>
+    <dependency>
+        <artifactId>commons-logging</artifactId>
+        <groupId>commons-logging</groupId>
+        <version>1.1.3</version>
+    </dependency>
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka_2.12</artifactId>
@@ -75,9 +89,9 @@
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>2.3.0</version>
-    </dependency>
+        <version>0.10.2.0</version>
 
+    </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
@@ -89,77 +103,16 @@
         <version>1.1.1</version>
     </dependency>
 
-
-    <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
-    <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-library</artifactId>
-        <version>2.11.11</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.scala-lang</groupId>
-        <artifactId>scala-xml</artifactId>
-        <version>2.11.0-M4</version>
-    </dependency>
-
 </dependencies>
     <build>
         <plugins>
 
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.log.stats.logflow.LogFlowApplication</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-         <!--   <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-          <!--  <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
                 <executions>
                     <execution>
@@ -179,34 +132,81 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
             </plugin>
-     <!--       <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                       <plugin>
+                           <artifactId>maven-assembly-plugin</artifactId>
+                           <configuration>
+                               <descriptorRefs>
+                                   <descriptorRef>jar-with-dependencies</descriptorRef>
+                               </descriptorRefs>
+                               <archive>
+                                   <manifest>
+                                       <mainClass>com.log.stats.logflow.LogFlowApplication</mainClass>
+                                   </manifest>
+                               </archive>
+                           </configuration>
+                       </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
                 <executions>
                     <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
+                        <id>install-external</id>
+                        <phase>clean</phase>
                         <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.basedir}/src/main/config/flux/config.yml</file>
-                                    <type>yml</type>
-                                </artifact>
-                            </artifacts>
+                            <file>${project.basedir}/libs/storm-kafka-1.2.2.jar</file>
+                            <repositoryLayout>default</repositoryLayout>
+                            <groupId>org.apache.storm</groupId>
+                            <artifactId>storm-kafka</artifactId>
+                            <version>1.2.2</version>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
                         </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+
+                       <plugin>
+                           <groupId>org.codehaus.mojo</groupId>
+                           <artifactId>build-helper-maven-plugin</artifactId>
+                           <version>3.0.0</version>
+                           <executions>
+                               <execution>
+                                   <id>attach-artifacts</id>
+                                   <phase>package</phase>
+                                   <goals>
+                                       <goal>attach-artifact</goal>
+                                   </goals>
+                                   <configuration>
+                                       <artifacts>
+                                           <artifact>
+                                               <file>${project.basedir}/src/main/config/flux/config.yml</file>
+                                               <type>yml</type>
+                                           </artifact>
+                                       </artifacts>
+                                   </configuration>
+                               </execution>
+                           </executions>
+                       </plugin>
         </plugins>
     </build>
 </project>

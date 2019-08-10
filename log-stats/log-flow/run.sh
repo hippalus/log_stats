@@ -1,2 +1,5 @@
-/apache-storm-1.2.2/bin/storm jar /topology.jar org.apache.storm.flux.Flux --remote /config.yml
-#storm jar storm-hive-streaming-example-1.0-SNAPSHOT.jar org.apache.storm.flux.Flux --remote flux-demo.yaml
+#storm jar  log-flow-1.0.jar org.apache.storm.flux.Flux --remote src/main/config/flux/config.yml
+##storm jar  log-flow-1.0.jar com.log.stats.logflow.LogFlowApplication
+#docker run -it -v log-flow-1.0.jar:/log-flow-1.0.jar  storm storm jar /log-flow-1.0.jar  com.log.stats.logflow.LogFlowApplication kafka:9092 elasticsearch
+
+docker run -it -v $(pwd)/log-flow-1.0.jar:/log-flow-1.0.jar  storm storm jar /log-flow-1.0.jar  com.log.stats.logflow.LogFlowApplication
