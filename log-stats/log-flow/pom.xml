@@ -18,7 +18,7 @@
         <groupId>org.apache.storm</groupId>
         <artifactId>storm-core</artifactId>
         <version>1.2.2</version>
-        <scope>compile</scope>
+        <scope>provided</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
@@ -113,7 +113,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
                 <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
                 </configuration>
                 <executions>
                     <execution>

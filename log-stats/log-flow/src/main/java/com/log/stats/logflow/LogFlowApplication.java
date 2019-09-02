@@ -36,9 +36,9 @@ public class LogFlowApplication {
             kafkaBoltProps.put("acks", "all");
 
 
-            LogFlowKafkaSpout logFlowKafkaSpout = new LogFlowKafkaSpout(KAFKA_BROKER, Constants.Topics.CITY_LOG_RAW, "raw-log-consumer-group", 3000, 1000000);
+            LogFlowKafkaSpout logFlowKafkaSpout = new LogFlowKafkaSpout(KAFKA_BROKER, Constants.Topics.CITY_LOG_RAW);
             LogRowValidatorBolt validatorBolt = new LogRowValidatorBolt();
-            ElasticSearchBolt elasticSearchBolt = new ElasticSearchBolt(Constants.CITY_LOGS, "valid", ELK_HOST, 9200);
+            ElasticSearchBolt elasticSearchBolt = new ElasticSearchBolt(Constants.CITY_LOGS, ELK_HOST, 9200);
 
             FieldNameBasedTupleToKafkaMapper<String, String> validLogRowMapper = new FieldNameBasedTupleToKafkaMapper<>("key", Constants.TupleFields.VALID_LOG);
 

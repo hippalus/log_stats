@@ -1,7 +1,6 @@
 name: "log-flow-topology"
 
 config:
-
   topology.workers: 2
   topology.tick.tuple.freq.secs: 1000
 
@@ -13,7 +12,7 @@ components:
       - name: "put"
         args:
           - "bootstrap.servers"
-          - "kafka:9092"
+          - "127.0.0.1:9092"
       - name: "put"
         args:
           - "key.serializer"
@@ -58,11 +57,8 @@ spouts:
   - id: "logFlowKafkaSpout"
     className: "com.log.stats.logflow.topology.spout.LogFlowKafkaSpout"
     constructorArgs:
-      - "kafka:9092"
+      - "127.0.0.1:9092"
       - "cityLog-raw"
-      - "raw-log-consumer-group"
-      - 3000
-      - 1000000
 
 bolts:
 
@@ -73,8 +69,7 @@ bolts:
     className: "com.log.stats.logflow.topology.bolt.ElasticSearchBolt"
     constructorArgs:
       - "city-logs"
-      - "valid"
-      - "elasticsearch"
+      - "127.0.0.1"
       - 9200
 
   - id: "kafkaValidBolt"
@@ -105,24 +100,11 @@ streams:
     grouping:
       type: ALL
 
-  - name: "validatorBolt -> inValidLogStreamBolt"
-    from: "preprocessBolt"
-    to: "inValidLogStreamBolt"
-    grouping:
-      streamId: invalid-log-stream
-      type: ALL
-
-  - name: "inValidLogStreamBolt -> kafkaInvalidBolt"
-    from: "inValidLogStreamBolt"
+  - name: "validatorBolt -> kafkaInvalidBolt"
+    from: "validatorBolt"
     to: "kafkaInvalidBolt"
     grouping:
-      type: ALL
-
-  - name: "preprocessBolt -> enrichmentBolt"
-    from: "preprocessBolt"
-    to: "enrichmentBolt"
-    grouping:
-      streamId: vcall-valid
+      streamId: invalid-log-stream
       type: ALL
 
   - name: "validatorBolt -> kafkaValidBolt"

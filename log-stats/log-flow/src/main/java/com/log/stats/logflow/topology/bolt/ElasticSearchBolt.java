@@ -2,7 +2,6 @@ package com.log.stats.logflow.topology.bolt;
 
 import com.log.stats.logflow.topology.Constants;
 import org.apache.http.HttpHost;
-import org.apache.http.client.HttpResponseException;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -28,11 +27,9 @@ public class ElasticSearchBolt extends BaseRichBolt {
     private final String targetIndex;
     private final String host;
     private final Integer port;
-    private final String typeName;
 
-    public ElasticSearchBolt(String targetIndex, String typeName, String host, Integer port) {
+    public ElasticSearchBolt(String targetIndex ,String host, Integer port) {
         this.targetIndex = targetIndex;
-        this.typeName = typeName;
         this.host = host;
         this.port = port;
     }
@@ -50,13 +47,15 @@ public class ElasticSearchBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         try {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(tuple.getStringByField(Constants.TupleFields.VALID_LOG));
-            Request request=new Request("POST", String.format("/%s/%s", targetIndex, typeName));
+            Request request=new Request("POST", String.format("/%s", targetIndex)+"/_doc");
+
             request.setJsonEntity(jsonObject.toJSONString());
+
             Response response=esClient.performRequest(request);
             //TODO :Response  check
 
         } catch (ParseException | IOException e) {
-            e.printStackTrace();
+            LOGGER.error(String.format("Failed ElasticBolt :%s", e.getMessage()));
         } finally {
             this.collector.ack(tuple);
         }
