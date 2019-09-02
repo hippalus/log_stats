@@ -18,7 +18,7 @@
         <groupId>org.apache.storm</groupId>
         <artifactId>storm-core</artifactId>
         <version>1.2.2</version>
-        <scope>provided</scope>
+        <scope>compile</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
@@ -29,10 +29,9 @@
     </dependency>
     <dependency>
         <groupId>org.elasticsearch.client</groupId>
-        <artifactId>transport</artifactId>
+        <artifactId>elasticsearch-rest-client</artifactId>
         <version>7.2.0</version>
     </dependency>
-
 
     <dependency>
         <groupId>org.apache.storm</groupId>
@@ -93,17 +92,19 @@
 
     </dependency>
     <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>2.9.9.3</version>
-    </dependency>
-    <dependency>
         <groupId>com.googlecode.json-simple</groupId>
         <artifactId>json-simple</artifactId>
         <version>1.1.1</version>
     </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.9.8</version>
+    </dependency>
 
 </dependencies>
+
+
     <build>
         <plugins>
 

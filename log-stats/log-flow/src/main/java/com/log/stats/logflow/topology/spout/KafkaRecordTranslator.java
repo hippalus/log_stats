@@ -13,8 +13,6 @@ public class KafkaRecordTranslator<K, V> implements RecordTranslator<K, V> {
 
     private static final long serialVersionUID = 4046733527937465363L;
 
-    public KafkaRecordTranslator() {
-    }
 
     @Override
     public List<Object> apply(ConsumerRecord<K, V> record) {

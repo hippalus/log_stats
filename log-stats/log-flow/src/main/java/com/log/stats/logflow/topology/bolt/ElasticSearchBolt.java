@@ -1,31 +1,34 @@
 package com.log.stats.logflow.topology.bolt;
 
+import com.log.stats.logflow.topology.Constants;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpResponseException;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.tuple.Tuple;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.client.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.Map;
 
 public class ElasticSearchBolt extends BaseRichBolt {
-    private OutputCollector collector;
-    private TransportClient esClient;
-    private JSONParser jsonParser;
-    private String targetIndex;
-    private String host;
-    private Integer port;
-    private String typeName;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchBolt.class);
+
+    private transient RestClient esClient;
+    private transient OutputCollector collector;
+    private transient JSONParser jsonParser;
+    private boolean declareOutputFlag=true;
+    private final String targetIndex;
+    private final String host;
+    private final Integer port;
+    private final String typeName;
 
     public ElasticSearchBolt(String targetIndex, String typeName, String host, Integer port) {
         this.targetIndex = targetIndex;
@@ -38,30 +41,21 @@ public class ElasticSearchBolt extends BaseRichBolt {
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         this.collector = outputCollector;
         this.jsonParser = new JSONParser();
-        Settings settings = Settings.builder()
-                .put("cluster.name", "docker-cluster")
-                .put("client.transport.ping_timeout", "500s").build();
+        esClient =  RestClient.builder(new HttpHost(this.host,this.port,"http")).build();
 
-        try {
-            esClient = new PreBuiltTransportClient(settings)
-                    .addTransportAddress(new TransportAddress(InetAddress.getByName(this.host), this.port));
-
-        } catch (UnknownHostException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void execute(Tuple tuple) {
-
         try {
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(tuple.getStringByField("valid-log"));
-            IndexResponse ixResponse = esClient.prepareIndex(this.targetIndex, this.typeName)
-                    .setSource(jsonObject)
-                    .get();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(tuple.getStringByField(Constants.TupleFields.VALID_LOG));
+            Request request=new Request("POST", String.format("/%s/%s", targetIndex, typeName));
+            request.setJsonEntity(jsonObject.toJSONString());
+            Response response=esClient.performRequest(request);
+            //TODO :Response  check
 
-        } catch (ParseException e) {
+        } catch (ParseException | IOException e) {
             e.printStackTrace();
         } finally {
             this.collector.ack(tuple);
@@ -72,6 +66,9 @@ public class ElasticSearchBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+        if (!declareOutputFlag){
+            throw new UnsupportedOperationException();
+        }
 
     }
 

@@ -10,9 +10,12 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    public static String stringToJsonString(String row) {
+    private Utils(){
+        throw new AssertionError();
+    }
 
-        //  Test for invalid Log Flow  String regex= "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}) ([^ ]*) ([^ ]*) (.*)$";
+    public static final String stringToJsonString(String row) {
+
         // 2019-08-03 21:57:39.037 DEBUG  Istanbul Hello From Istanbul
         final String regex = "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}) ([^ ]*) {1,2}([^ ]*) (.*)$";
         final Pattern p = Pattern.compile(regex);

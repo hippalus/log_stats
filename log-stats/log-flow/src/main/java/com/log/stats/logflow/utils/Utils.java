@@ -6,7 +6,11 @@ import org.apache.storm.shade.org.json.simple.parser.JSONParser;
 import java.text.ParseException;
 
 public class Utils {
-    public static synchronized JSONObject convertStringToJSON(String jsonStr) throws ParseException {
+    private Utils() {
+    throw new AssertionError();
+    }
+
+    public static synchronized JSONObject convertStringToJSON(String jsonStr){
         try {
             String json = jsonStr.replaceAll("\'", "\"");
             return (JSONObject) new JSONParser().parse(json);

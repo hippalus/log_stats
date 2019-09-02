@@ -9,6 +9,10 @@ import java.util.*;
 
 
 public class RawLogRowValidator {
+    private RawLogRowValidator() {
+     throw new AssertionError();
+    }
+
     private static Map<Long,String> cityRepository=new HashMap<>();
 
     private static Set<String> getLogLevel() {

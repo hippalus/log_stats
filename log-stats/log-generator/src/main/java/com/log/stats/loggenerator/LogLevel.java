@@ -1,5 +1,7 @@
 package com.log.stats.loggenerator;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,4 +17,8 @@ public enum LogLevel {
     public static LogLevel randomLogLevel()  {
         return VALUES.get(RANDOM.nextInt(SIZE));
     }
+    public static Logger getLoggerByCity(City city) {
+        return Logger.getLogger(city.getName());
+    }
+
 }

@@ -9,14 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaConsumerService {
 
+    private final SimpMessagingTemplate messagingTemplate;
+
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    public KafkaConsumerService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @KafkaListener(topics="${kafka.topic}")
     public void consume(@Payload String message){
 
         messagingTemplate.convertAndSend("/topic/realtime-log-flow",message);
-
-
     }
 }

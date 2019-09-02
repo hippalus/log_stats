@@ -1,6 +1,7 @@
 package com.log.stats.loggenerator;
 
 import org.apache.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
@@ -20,18 +21,29 @@ public class LogGeneratorTest {
 
     @Test
     public void  should_random_city_name_create(){
-        List<City> cities=new ArrayList<>();
-        cities.add(new City("Istanbul"));
-        cities.add(new City("Tokyo"));
-        cities.add(new City("Moscow"));
-        cities.add(new City("Beijing"));
-        cities.add(new City("London"));
-        assertTrue(cities.contains(Utils.getRandomCity()));
-    }
+
+        List<String> cities=new ArrayList<>();
+        cities.add( "Istanbul");
+        cities.add("Tokyo");
+        cities.add("Moscow");
+        cities.add("Beijing");
+        cities.add("London");
+
+        Assertions.assertAll(
+                () -> assertTrue(cities.contains(City.getRandomCity().getName()))
+        );
+
+        Assertions.assertAll(
+                () -> {
+                    City city=City.getRandomCity();
+        assertEquals(String.format("Hello From %s", city.getName()),city.getMessage());
+
+    });}
+
     @Test
     public  void should_random_city_logger(){
-        City city=Utils.getRandomCity();
-        Logger logger=Utils.getLoggerByCity(city);
+        City city=City.getRandomCity();
+        Logger logger=LogLevel.getLoggerByCity(city);
         assertEquals(city.getName(),logger.getName());
 
     }

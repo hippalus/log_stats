@@ -2,19 +2,32 @@ package com.log.stats.loggenerator;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+
+
 
 public class LogGeneratorApplication {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
+        AtomicBoolean flag = new AtomicBoolean(true);
+        Runnable writer = () -> {
+            while (flag.get()) {
+                try {
+                    City city = City.getRandomCity();
+                    Logger logger = LogLevel.getLoggerByCity(city);
+                    checkRandomLogLevelAndRandomLoggerName(city, logger);
 
-        while (true) {
-            City city = Utils.getRandomCity();
-            Logger logger = Utils.getLoggerByCity(city);
-            checkRandomLogLevelAndRandomLoggerName(city, logger);
-            Thread.sleep((long) (Math.random() * 1000));
-        }
-
+                    Thread.sleep((long) (Math.random() * 1000));
+                } catch (InterruptedException e) {
+                    flag.set(false);
+                   Thread.currentThread().interrupt();
+                }
+            }
+        };
+        writer.run();
     }
+
 
     private static void checkRandomLogLevelAndRandomLoggerName(City city, Logger logger) {
         if (isLogLevelError()) {
@@ -34,15 +47,21 @@ public class LogGeneratorApplication {
         logger.error(city.getMessage());
     }
 
-    private static void loggerIsWarn(City city, Logger logger) { logger.warn(city.getMessage()); }
+    private static void loggerIsWarn(City city, Logger logger) {
+        logger.warn(city.getMessage());
+    }
 
-    private static void loggerIsInfo(City city, Logger logger) { logger.info(city.getMessage()); }
+    private static void loggerIsInfo(City city, Logger logger) {
+        logger.info(city.getMessage());
+    }
 
     private static void loggerIsDebug(City city, Logger logger) {
         logger.debug(city.getMessage());
     }
 
-    private static void loggerIsFatal(City city, Logger logger) { logger.fatal(city.getMessage()); }
+    private static void loggerIsFatal(City city, Logger logger) {
+        logger.fatal(city.getMessage());
+    }
 
     private static boolean isLogLevelFatal() {
         return LogLevel.FATAL.equals(LogLevel.randomLogLevel());

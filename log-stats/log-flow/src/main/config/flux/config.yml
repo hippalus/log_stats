@@ -75,7 +75,7 @@ bolts:
       - "city-logs"
       - "valid"
       - "elasticsearch"
-      - 9300
+      - 9200
 
   - id: "kafkaValidBolt"
     className: "org.apache.storm.kafka.bolt.KafkaBolt"
